@@ -8,20 +8,12 @@ To dump data into redis
 python redis_dump.py dump [filepath] --search '*txt'
 """
 
-import click
-import redis
-import json
+from rejson import Client, Path
 import logging
-import os
 
-
-@click.command()
-@click.argument('action')
-@click.argument('filepath')
-@click.option('--search', help="Key search patter. eg `*txt`")
 def main(action, filepath, search):
-    r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)  # update your redis settings
-    cache_timeout = None
+    rj = Client(host='localhost', port=6379, decode_responses=True)  # update your redis settings
+
     if action == 'dump':
         out = {}
         for key in r.scan_iter(search):
@@ -38,13 +30,12 @@ def main(action, filepath, search):
 
     elif action == 'load':
         try:
-            with open(filepath) as f:
-                data = json.load(f)
-                for key in data:
-                    r.set(key, data.get(key), cache_timeout)
-                print('Data loaded into redis successfully')
+            print('here......')
+            usr = r.json.get('user');
+            print(usr)
+           
         except Exception as e:
-            print(e)
+            print('here is the error: ' + str(e))
 
 
 if __name__ == '__main__':    
